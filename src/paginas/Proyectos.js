@@ -8,7 +8,8 @@ const categorias = ['Todos', 'Frontend', 'Fullstack', 'Mobile'];
 function Proyectos({ usuario }) {
   const [filtro, setFiltro] = useState('Todos');
 
-  const proyectos = useProyectos() || [];
+  const datos = useProyectos();
+  const proyectos = datos || [];
 
   let lista = proyectos.filter((p) => p.visible);
   if (filtro !== 'Todos') {
@@ -72,7 +73,8 @@ function Proyectos({ usuario }) {
             </div>
           ))}
         </div>
-        {lista.length === 0 && <p className="texto-gris text-center mt-4">No hay proyectos en esta categoría</p>}
+        {datos === null && <p className="texto-gris text-center mt-4">Cargando proyectos...</p>}
+        {datos !== null && lista.length === 0 && <p className="texto-gris text-center mt-4">No hay proyectos en esta categoría</p>}
       </div>
     </div>
   );
