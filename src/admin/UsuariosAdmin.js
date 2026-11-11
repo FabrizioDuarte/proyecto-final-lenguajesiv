@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useUsuarios, cambiarRol, cambiarActivo, borrarUsuario } from '../store';
 
 function UsuariosAdmin() {
-  const usuarios = useUsuarios();
+  const usuarios = useUsuarios() || [];
   const [buscar, setBuscar] = useState('');
   const [rol, setRol] = useState('Todos');
   const [estado, setEstado] = useState('Todos');
@@ -22,7 +22,7 @@ function UsuariosAdmin() {
   }
 
   function borrar(u) {
-    if (window.confirm('¿Borrar al usuario ' + u.nombre + '?')) {
+    if (window.confirm('¿Borrar al usuario ' + u.nombre + '? Ya no va a poder entrar al sitio.')) {
       borrarUsuario(u.id);
     }
   }
@@ -43,6 +43,7 @@ function UsuariosAdmin() {
             <option value="Todos">Todos los roles</option>
             <option value="usuario">Usuario</option>
             <option value="operador">Operador</option>
+            <option value="admin">Admin</option>
           </select>
           <select className="form-select w-auto" value={estado} onChange={(e) => setEstado(e.target.value)}>
             <option>Todos</option>
@@ -70,24 +71,32 @@ function UsuariosAdmin() {
                   <td>{u.nombre}</td>
                   <td className="small">{u.email}</td>
                   <td>
-                    <select className="form-select form-select-sm" value={u.rol} onChange={(e) => cambiarRol(u.id, e.target.value)}>
-                      <option value="usuario">Usuario</option>
-                      <option value="operador">Operador</option>
-                    </select>
+                    {u.rol === 'admin' ? (
+                      <span className="badge bg-dark">Admin</span>
+                    ) : (
+                      <select className="form-select form-select-sm" value={u.rol} onChange={(e) => cambiarRol(u.id, e.target.value)}>
+                        <option value="usuario">Usuario</option>
+                        <option value="operador">Operador</option>
+                      </select>
+                    )}
                   </td>
-                  <td className="small">{u.fechaRegistro}</td>
+                  <td className="small">{u.fecha_registro}</td>
                   <td>
                     <span className={u.activo ? 'badge estado-respondido' : 'badge bg-secondary'}>
                       {u.activo ? 'Activo' : 'Bloqueado'}
                     </span>
                   </td>
                   <td className="text-nowrap">
-                    <button className="btn btn-sm btn-outline-secondary me-1" onClick={() => cambiarActivo(u.id)}>
-                      {u.activo ? <i className="bi bi-lock"></i> : <i className="bi bi-unlock"></i>}
-                    </button>
-                    <button className="btn btn-sm btn-outline-danger" onClick={() => borrar(u)}>
-                      <i className="bi bi-trash"></i>
-                    </button>
+                    {u.rol !== 'admin' && (
+                      <>
+                        <button className="btn btn-sm btn-outline-secondary me-1" onClick={() => cambiarActivo(u)}>
+                          {u.activo ? <i className="bi bi-lock"></i> : <i className="bi bi-unlock"></i>}
+                        </button>
+                        <button className="btn btn-sm btn-outline-danger" onClick={() => borrar(u)}>
+                          <i className="bi bi-trash"></i>
+                        </button>
+                      </>
+                    )}
                   </td>
                 </tr>
               ))}

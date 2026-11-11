@@ -7,7 +7,7 @@ const palabras = ['Fullstack', 'React', 'Node.js', 'Web'];
 
 function Inicio() {
   const [indice, setIndice] = useState(0);
-  const servicios = useServicios();
+  const servicios = useServicios() || [];
 
   useEffect(() => {
     const intervalo = setInterval(() => {

@@ -5,10 +5,12 @@ import { iconos } from '../datos/datos';
 const vacio = { titulo: '', icono: 'bi-code-slash', descripcion: '', incluye: '' };
 
 function ServiciosAdmin() {
-  const servicios = useServicios();
+  const servicios = useServicios() || [];
   const [form, setForm] = useState(vacio);
   const [editando, setEditando] = useState(null);
   const [errores, setErrores] = useState({});
+  const [errorGuardar, setErrorGuardar] = useState('');
+  const [guardando, setGuardando] = useState(false);
 
   function cambiar(e) {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -18,6 +20,7 @@ function ServiciosAdmin() {
     setEditando(s.id);
     setForm({ titulo: s.titulo, icono: s.icono, descripcion: s.descripcion, incluye: s.incluye.join(', ') });
     setErrores({});
+    setErrorGuardar('');
     window.scrollTo(0, 0);
   }
 
@@ -27,7 +30,7 @@ function ServiciosAdmin() {
     setErrores({});
   }
 
-  function guardar(e) {
+  async function guardar(e) {
     e.preventDefault();
     const incluye = form.incluye.split(',').map((i) => i.trim()).filter((i) => i !== '');
     const nuevos = {};
@@ -43,18 +46,28 @@ function ServiciosAdmin() {
     }
 
     setErrores(nuevos);
+    setErrorGuardar('');
     if (Object.keys(nuevos).length > 0) {
       return;
     }
 
-    guardarServicio({
-      id: editando ? editando : Date.now(),
-      titulo: form.titulo.trim(),
-      icono: form.icono,
-      descripcion: form.descripcion.trim(),
-      incluye: incluye
-    });
-    cancelar();
+    setGuardando(true);
+    const error = await guardarServicio(
+      {
+        titulo: form.titulo.trim(),
+        icono: form.icono,
+        descripcion: form.descripcion.trim(),
+        incluye: incluye
+      },
+      editando
+    );
+    setGuardando(false);
+
+    if (error) {
+      setErrorGuardar('No se pudo guardar: ' + error);
+    } else {
+      cancelar();
+    }
   }
 
   function borrar(s) {
@@ -73,6 +86,7 @@ function ServiciosAdmin() {
         <div className="col-lg-5">
           <div className="tarjeta tarjeta-fija p-4">
             <h5>{editando ? 'Editar servicio' : 'Nuevo servicio'}</h5>
+            {errorGuardar && <div className="alert alert-danger py-2">{errorGuardar}</div>}
             <form onSubmit={guardar} noValidate>
               <div className="mb-3">
                 <label className="form-label">Título</label>
@@ -117,7 +131,7 @@ function ServiciosAdmin() {
                 <div className="invalid-feedback">{errores.incluye}</div>
               </div>
               <div className="d-flex gap-2">
-                <button type="submit" className="btn btn-violeta">
+                <button type="submit" className="btn btn-violeta" disabled={guardando}>
                   <i className="bi bi-save"></i> {editando ? 'Guardar cambios' : 'Agregar'}
                 </button>
                 {editando && (

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { useProyectos, guardarProyecto } from '../store';
+import { useProyectos, guardarProyecto, subirImagen } from '../store';
 import { iconos, demos } from '../datos/datos';
 import { achicarImagen } from '../utilidades';
 
@@ -19,10 +19,30 @@ const vacio = {
 
 function EditorProyecto() {
   const { id } = useParams();
-  const navigate = useNavigate();
   const proyectos = useProyectos();
+
+  if (proyectos === null) {
+    return <p className="texto-gris">Cargando...</p>;
+  }
+
   const esNuevo = id === 'nuevo';
   const original = proyectos.find((p) => p.id === Number(id));
+
+  if (!esNuevo && !original) {
+    return (
+      <div>
+        <h2>El proyecto no existe</h2>
+        <Link to="/admin/proyectos" className="texto-violeta">Volver a proyectos</Link>
+      </div>
+    );
+  }
+
+  return <FormProyecto original={original} key={id} />;
+}
+
+function FormProyecto({ original }) {
+  const navigate = useNavigate();
+  const esNuevo = !original;
 
   let inicial = vacio;
   if (original) {
@@ -37,15 +57,8 @@ function EditorProyecto() {
   const [form, setForm] = useState(inicial);
   const [errores, setErrores] = useState({});
   const [errorImagen, setErrorImagen] = useState('');
-
-  if (!esNuevo && !original) {
-    return (
-      <div>
-        <h2>El proyecto no existe</h2>
-        <Link to="/admin/proyectos" className="texto-violeta">Volver a proyectos</Link>
-      </div>
-    );
-  }
+  const [errorGuardar, setErrorGuardar] = useState('');
+  const [guardando, setGuardando] = useState(false);
 
   function cambiar(e) {
     if (e.target.type === 'checkbox') {
@@ -81,7 +94,7 @@ function EditorProyecto() {
       });
   }
 
-  function guardar(e) {
+  async function guardar(e) {
     e.preventDefault();
     const tecnologias = form.tecnologias.split(',').map((t) => t.trim()).filter((t) => t !== '');
     const funciones = form.funciones.split(',').map((f) => f.trim()).filter((f) => f !== '');
@@ -90,7 +103,7 @@ function EditorProyecto() {
     if (form.titulo.trim().length < 3) {
       nuevos.titulo = 'El título tiene que tener al menos 3 letras';
     }
-    if (form.resumen.trim().length < 10 || form.resumen.length > 100) {
+    if (form.resumen.trim().length < 10 || form.resumen.trim().length > 100) {
       nuevos.resumen = 'El resumen tiene que tener entre 10 y 100 caracteres';
     }
     if (form.descripcion.trim().length < 20) {
@@ -101,12 +114,24 @@ function EditorProyecto() {
     }
 
     setErrores(nuevos);
+    setErrorGuardar('');
     if (Object.keys(nuevos).length > 0) {
       return;
     }
 
-    const proyecto = {
-      id: esNuevo ? Date.now() : original.id,
+    setGuardando(true);
+
+    let imagen = form.imagen;
+    if (imagen && imagen.startsWith('data:')) {
+      imagen = await subirImagen(imagen);
+      if (!imagen) {
+        setErrorImagen('No se pudo subir la imagen');
+        setGuardando(false);
+        return;
+      }
+    }
+
+    const datos = {
       titulo: form.titulo.trim(),
       categoria: form.categoria,
       resumen: form.resumen.trim(),
@@ -115,15 +140,17 @@ function EditorProyecto() {
       funciones: funciones,
       icono: form.icono,
       demo: form.demo === '' ? null : form.demo,
-      imagen: form.imagen,
+      imagen: imagen,
       visible: form.visible
     };
 
-    const ok = guardarProyecto(proyecto);
-    if (ok) {
-      navigate('/admin/proyectos');
+    const error = await guardarProyecto(datos, esNuevo ? null : original.id);
+    setGuardando(false);
+
+    if (error) {
+      setErrorGuardar('No se pudo guardar: ' + error);
     } else {
-      setErrorImagen('No hay espacio para guardar. Probá con una imagen más chica.');
+      navigate('/admin/proyectos');
     }
   }
 
@@ -133,6 +160,7 @@ function EditorProyecto() {
         <i className="bi bi-arrow-left"></i> Volver a proyectos
       </Link>
       <h2 className="mt-2 mb-4">{esNuevo ? 'Nuevo proyecto' : 'Editar ' + original.titulo}</h2>
+      {errorGuardar && <div className="alert alert-danger">{errorGuardar}</div>}
 
       <form className="row g-4" onSubmit={guardar} noValidate>
         <div className="col-lg-8">
@@ -239,8 +267,8 @@ function EditorProyecto() {
               <label className="form-check-label" htmlFor="visible">Visible en el sitio</label>
             </div>
 
-            <button type="submit" className="btn btn-violeta w-100">
-              <i className="bi bi-save"></i> Guardar
+            <button type="submit" className="btn btn-violeta w-100" disabled={guardando}>
+              <i className="bi bi-save"></i> {guardando ? 'Guardando...' : 'Guardar'}
             </button>
           </div>
         </div>

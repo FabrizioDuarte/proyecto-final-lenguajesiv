@@ -3,7 +3,7 @@ import Aparecer from '../componentes/Aparecer';
 import { useServicios } from '../store';
 
 function Servicios() {
-  const servicios = useServicios();
+  const servicios = useServicios() || [];
 
   return (
     <div>

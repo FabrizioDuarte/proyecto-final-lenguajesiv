@@ -10,6 +10,11 @@ function DetalleProyecto() {
   const { id } = useParams();
   const [aviso, setAviso] = useState('');
   const proyectos = useProyectos();
+
+  if (proyectos === null) {
+    return <div className="container seccion text-center texto-gris">Cargando...</div>;
+  }
+
   const proyecto = proyectos.find((p) => p.id === Number(id) && p.visible);
 
   if (!proyecto) {

@@ -1,43 +1,47 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useUsuarios, sumarAcceso } from '../store';
+import { supabase } from '../supabaseClient';
+import { buscarPerfil, sumarAcceso } from '../store';
 
 function Login({ iniciarSesion }) {
-  const usuarios = useUsuarios();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [cargando, setCargando] = useState(false);
   const navigate = useNavigate();
 
-  function ingresar(e) {
+  async function ingresar(e) {
     e.preventDefault();
     if (email === '' || password === '') {
       setError('Completá todos los campos');
       return;
     }
 
-    let encontrado = null;
-    for (let i = 0; i < usuarios.length; i++) {
-      if (usuarios[i].email === email && usuarios[i].password === password) {
-        encontrado = usuarios[i];
-      }
-    }
+    setCargando(true);
+    setError('');
+    const { data, error: errorLogin } = await supabase.auth.signInWithPassword({ email: email, password: password });
 
-    if (encontrado == null) {
+    if (errorLogin) {
       setError('Email o contraseña incorrectos');
+      setCargando(false);
       return;
     }
 
-    if (!encontrado.activo) {
+    const perfil = await buscarPerfil(data.user.id);
+    if (!perfil || !perfil.activo) {
+      await supabase.auth.signOut();
       setError('Tu cuenta está bloqueada');
+      setCargando(false);
       return;
     }
 
-    sumarAcceso();
-    iniciarSesion({ nombre: encontrado.nombre, email: encontrado.email, rol: encontrado.rol });
+    await sumarAcceso(data.user.id);
+    iniciarSesion(perfil);
 
-    if (encontrado.rol === 'operador') {
+    if (perfil.rol === 'operador') {
       navigate('/operador');
+    } else if (perfil.rol === 'admin') {
+      navigate('/admin');
     } else {
       navigate('/proyectos');
     }
@@ -57,7 +61,9 @@ function Login({ iniciarSesion }) {
           <label className="form-label">Contraseña</label>
           <input type="password" className="form-control" value={password} onChange={(e) => setPassword(e.target.value)} />
         </div>
-        <button type="submit" className="btn btn-violeta w-100">Ingresar</button>
+        <button type="submit" className="btn btn-violeta w-100" disabled={cargando}>
+          {cargando ? 'Ingresando...' : 'Ingresar'}
+        </button>
       </form>
       <p className="text-center mt-3 mb-0">
         ¿No tenés cuenta? <Link to="/registro" className="texto-violeta">Registrate</Link>

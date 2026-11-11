@@ -8,7 +8,7 @@ const categorias = ['Todos', 'Frontend', 'Fullstack', 'Mobile'];
 function Proyectos({ usuario }) {
   const [filtro, setFiltro] = useState('Todos');
 
-  const proyectos = useProyectos();
+  const proyectos = useProyectos() || [];
 
   let lista = proyectos.filter((p) => p.visible);
   if (filtro !== 'Todos') {

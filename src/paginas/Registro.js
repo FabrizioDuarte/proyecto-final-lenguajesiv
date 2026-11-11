@@ -1,19 +1,21 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useUsuarios, registrarUsuario, sumarAcceso } from '../store';
-import { hoy } from '../utilidades';
+import { supabase } from '../supabaseClient';
+import { buscarPerfil, sumarAcceso } from '../store';
 
 function Registro({ iniciarSesion }) {
-  const usuarios = useUsuarios();
   const [form, setForm] = useState({ nombre: '', email: '', password: '', repetir: '' });
   const [errores, setErrores] = useState({});
+  const [error, setError] = useState('');
+  const [aviso, setAviso] = useState('');
+  const [cargando, setCargando] = useState(false);
   const navigate = useNavigate();
 
   function cambiar(e) {
     setForm({ ...form, [e.target.name]: e.target.value });
   }
 
-  function registrar(e) {
+  async function registrar(e) {
     e.preventDefault();
     const email = form.email;
     const nuevos = {};
@@ -24,11 +26,6 @@ function Registro({ iniciarSesion }) {
     if (!email.includes('@') || !email.includes('.')) {
       nuevos.email = 'Ingresá un email válido';
     }
-    for (let i = 0; i < usuarios.length; i++) {
-      if (usuarios[i].email === email) {
-        nuevos.email = 'Ya existe una cuenta con ese email';
-      }
-    }
     if (form.password.length < 6) {
       nuevos.password = 'La contraseña tiene que tener al menos 6 caracteres';
     }
@@ -37,22 +34,40 @@ function Registro({ iniciarSesion }) {
     }
 
     setErrores(nuevos);
+    setError('');
     if (Object.keys(nuevos).length > 0) {
       return;
     }
 
-    const nuevo = {
-      id: Date.now(),
-      nombre: form.nombre,
+    setCargando(true);
+    const { data, error: errorRegistro } = await supabase.auth.signUp({
       email: email,
       password: form.password,
-      rol: 'usuario',
-      activo: true,
-      fechaRegistro: hoy()
-    };
-    registrarUsuario(nuevo);
-    sumarAcceso();
-    iniciarSesion({ nombre: nuevo.nombre, email: nuevo.email, rol: nuevo.rol });
+      options: { data: { nombre: form.nombre } }
+    });
+
+    if (errorRegistro) {
+      if (errorRegistro.message.includes('registered')) {
+        setError('Ya existe una cuenta con ese email');
+      } else {
+        setError('No se pudo crear la cuenta: ' + errorRegistro.message);
+      }
+      setCargando(false);
+      return;
+    }
+
+    if (!data.session) {
+      setAviso('Te mandamos un email para confirmar tu cuenta.');
+      setCargando(false);
+      return;
+    }
+
+    let perfil = await buscarPerfil(data.user.id);
+    if (!perfil) {
+      perfil = { id: data.user.id, nombre: form.nombre, email: email, rol: 'usuario', activo: true };
+    }
+    await sumarAcceso(data.user.id);
+    iniciarSesion(perfil);
     navigate('/proyectos');
   }
 
@@ -60,6 +75,8 @@ function Registro({ iniciarSesion }) {
     <div className="tarjeta tarjeta-fija caja-form">
       <h2 className="text-center mb-1">Crear cuenta</h2>
       <p className="text-center texto-gris mb-4">Registrate para ver el detalle de los proyectos</p>
+      {error && <div className="alert alert-danger py-2">{error}</div>}
+      {aviso && <div className="alert alert-success py-2">{aviso}</div>}
       <form onSubmit={registrar} noValidate>
         <div className="mb-3">
           <label className="form-label">Nombre</label>
@@ -104,7 +121,9 @@ function Registro({ iniciarSesion }) {
           />
           <div className="invalid-feedback">{errores.repetir}</div>
         </div>
-        <button type="submit" className="btn btn-violeta w-100">Registrarme</button>
+        <button type="submit" className="btn btn-violeta w-100" disabled={cargando}>
+          {cargando ? 'Creando cuenta...' : 'Registrarme'}
+        </button>
       </form>
       <p className="text-center mt-3 mb-0">
         ¿Ya tenés cuenta? <Link to="/login" className="texto-violeta">Iniciá sesión</Link>

@@ -1,12 +1,12 @@
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import App from './App';
+import Footer from './componentes/Footer';
 
-test('muestra el nombre del desarrollador en el inicio', () => {
+test('el footer muestra el nombre del desarrollador', () => {
   render(
-    <MemoryRouter initialEntries={['/']}>
-      <App />
+    <MemoryRouter>
+      <Footer />
     </MemoryRouter>
   );
-  expect(screen.getByRole('heading', { name: 'Andrew Tanenbaum' })).toBeInTheDocument();
+  expect(screen.getByText(/Andrew Tanenbaum/)).toBeInTheDocument();
 });

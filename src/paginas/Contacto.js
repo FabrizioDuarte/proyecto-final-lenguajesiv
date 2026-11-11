@@ -24,6 +24,8 @@ function Contacto({ usuario }) {
   const [archivo, setArchivo] = useState(null);
   const [errores, setErrores] = useState({});
   const [enviado, setEnviado] = useState(false);
+  const [errorEnvio, setErrorEnvio] = useState('');
+  const [enviando, setEnviando] = useState(false);
   const [copiado, setCopiado] = useState(false);
 
   function cambiar(e) {
@@ -62,16 +64,19 @@ function Contacto({ usuario }) {
     return nuevos;
   }
 
-  function enviar(e) {
+  async function enviar(e) {
     e.preventDefault();
+    const formulario = e.target;
     const nuevos = validar();
     setErrores(nuevos);
+    setEnviado(false);
+    setErrorEnvio('');
     if (Object.keys(nuevos).length > 0) {
       return;
     }
 
-    agregarMensaje({
-      id: Date.now(),
+    setEnviando(true);
+    const error = await agregarMensaje({
       nombre: form.nombre.trim(),
       email: form.email.trim(),
       tipo: form.tipo,
@@ -81,11 +86,17 @@ function Contacto({ usuario }) {
       fecha: hoy(),
       estado: 'Pendiente'
     });
+    setEnviando(false);
+
+    if (error) {
+      setErrorEnvio('No se pudo enviar el mensaje. Probá de nuevo más tarde.');
+      return;
+    }
 
     setEnviado(true);
     setForm({ ...form, asunto: '', mensaje: '' });
     setArchivo(null);
-    e.target.reset();
+    formulario.reset();
   }
 
   function copiarEmail() {
@@ -124,6 +135,7 @@ function Contacto({ usuario }) {
                   <i className="bi bi-check-circle"></i> ¡Mensaje enviado! Te voy a responder por email a la brevedad.
                 </div>
               )}
+              {errorEnvio && <div className="alert alert-danger">{errorEnvio}</div>}
               <form onSubmit={enviar} noValidate>
                 <div className="row g-3">
                   <div className="col-md-6">
@@ -188,8 +200,8 @@ function Contacto({ usuario }) {
                     <div className="invalid-feedback">{errores.archivo}</div>
                   </div>
                   <div className="col-12">
-                    <button type="submit" className="btn btn-violeta">
-                      <i className="bi bi-send"></i> Enviar mensaje
+                    <button type="submit" className="btn btn-violeta" disabled={enviando}>
+                      <i className="bi bi-send"></i> {enviando ? 'Enviando...' : 'Enviar mensaje'}
                     </button>
                   </div>
                 </div>

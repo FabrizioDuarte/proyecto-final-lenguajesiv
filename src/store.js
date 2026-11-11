@@ -1,80 +1,73 @@
 import { useSyncExternalStore } from 'react';
-import {
-  proyectos,
-  servicios,
-  usuariosIniciales,
-  mensajesIniciales,
-  visitasIniciales,
-  accesosIniciales
-} from './datos/datos';
+import { supabase } from './supabaseClient';
 import { hoy } from './utilidades';
 
-function crearStore(clave, inicial) {
+const stores = [];
+
+function crearStore(tabla, consulta) {
+  let valor = null;
   let listeners = [];
-  let cache = null;
+  let iniciado = false;
 
-  function leer() {
-    try {
-      const texto = localStorage.getItem(clave);
-      if (texto) {
-        return JSON.parse(texto);
+  async function recargar() {
+    const { data, error } = await consulta();
+    if (error) {
+      console.log('Error cargando ' + tabla + ': ' + error.message);
+      if (valor === null) {
+        valor = [];
       }
-    } catch (e) {}
-    return inicial();
-  }
-
-  function avisar() {
+    } else {
+      valor = data;
+    }
     listeners.forEach((fn) => fn());
   }
 
   function get() {
-    if (cache === null) {
-      cache = { valor: leer() };
-    }
-    return cache.valor;
-  }
-
-  function set(valor) {
-    try {
-      localStorage.setItem(clave, JSON.stringify(valor));
-    } catch (e) {
-      alert('No hay más espacio para guardar datos en el navegador');
-      return false;
-    }
-    cache = { valor: valor };
-    avisar();
-    return true;
-  }
-
-  function borrar() {
-    localStorage.removeItem(clave);
-    cache = null;
-    avisar();
+    return valor;
   }
 
   function suscribir(fn) {
     listeners.push(fn);
+    if (!iniciado) {
+      iniciado = true;
+      recargar();
+      supabase
+        .channel('cambios-' + tabla)
+        .on('postgres_changes', { event: '*', schema: 'public', table: tabla }, () => recargar())
+        .subscribe();
+    }
     return () => {
       listeners = listeners.filter((l) => l !== fn);
     };
   }
 
-  window.addEventListener('storage', (e) => {
-    if (e.key === clave || e.key === null) {
-      cache = null;
-      avisar();
-    }
-  });
+  function estaIniciado() {
+    return iniciado;
+  }
 
-  return { get, set, borrar, suscribir };
+  const store = { get, suscribir, recargar, estaIniciado };
+  stores.push(store);
+  return store;
 }
 
-const proyectosStore = crearStore('pf:proyectos', () => proyectos.map((p) => ({ ...p, visible: true, imagen: null })));
-const serviciosStore = crearStore('pf:servicios', () => servicios);
-const usuariosStore = crearStore('pf:usuarios', usuariosIniciales);
-const mensajesStore = crearStore('pf:mensajes', mensajesIniciales);
-const visitasStore = crearStore('pf:visitas', visitasIniciales);
-const accesosStore = crearStore('pf:accesos', accesosIniciales);
+const proyectosStore = crearStore('proyectos', () => supabase.from('proyectos').select('*').order('id'));
+const serviciosStore = crearStore('servicios', () => supabase.from('servicios').select('*').order('id'));
+const usuariosStore = crearStore('perfiles', () =>
+  supabase.from('perfiles').select('*').order('fecha_registro', { ascending: false })
+);
+const mensajesStore = crearStore('mensajes', () =>
+  supabase.from('mensajes').select('*').order('fecha', { ascending: false }).order('id', { ascending: false })
+);
+
+supabase.auth.onAuthStateChange(() => {
+  setTimeout(() => {
+    stores.forEach((s) => {
+      if (s.estaIniciado()) {
+        s.recargar();
+      }
+    });
+  }, 0);
+});
 
 export function useProyectos() {
   return useSyncExternalStore(proyectosStore.suscribir, proyectosStore.get);
@@ -92,77 +85,91 @@ export function useMensajes() {
   return useSyncExternalStore(mensajesStore.suscribir, mensajesStore.get);
 }
 
-export function useVisitas() {
-  return useSyncExternalStore(visitasStore.suscribir, visitasStore.get);
+export async function buscarPerfil(id) {
+  const { data } = await supabase.from('perfiles').select('*').eq('id', id).maybeSingle();
+  return data;
 }
 
-export function useAccesos() {
-  return useSyncExternalStore(accesosStore.suscribir, accesosStore.get);
-}
-
-export function guardarProyecto(proyecto) {
-  const lista = proyectosStore.get();
-  let existe = false;
-  for (let i = 0; i < lista.length; i++) {
-    if (lista[i].id === proyecto.id) {
-      existe = true;
-    }
+export async function subirImagen(dataUrl) {
+  const blob = await fetch(dataUrl).then((r) => r.blob());
+  const nombre = Date.now() + '.jpg';
+  const { error } = await supabase.storage.from('proyectos').upload(nombre, blob, { contentType: 'image/jpeg' });
+  if (error) {
+    console.log('Error subiendo imagen: ' + error.message);
+    return null;
   }
-  if (existe) {
-    return proyectosStore.set(lista.map((p) => (p.id === proyecto.id ? proyecto : p)));
-  }
-  return proyectosStore.set([...lista, proyecto]);
+  return supabase.storage.from('proyectos').getPublicUrl(nombre).data.publicUrl;
 }
 
-export function cambiarVisible(id) {
-  proyectosStore.set(proyectosStore.get().map((p) => (p.id === id ? { ...p, visible: !p.visible } : p)));
-}
-
-export function borrarProyecto(id) {
-  proyectosStore.set(proyectosStore.get().filter((p) => p.id !== id));
-}
-
-export function guardarServicio(servicio) {
-  const lista = serviciosStore.get();
-  let existe = false;
-  for (let i = 0; i < lista.length; i++) {
-    if (lista[i].id === servicio.id) {
-      existe = true;
-    }
-  }
-  if (existe) {
-    serviciosStore.set(lista.map((s) => (s.id === servicio.id ? servicio : s)));
+export async function guardarProyecto(proyecto, id) {
+  let respuesta;
+  if (id) {
+    respuesta = await supabase.from('proyectos').update(proyecto).eq('id', id);
   } else {
-    serviciosStore.set([...lista, servicio]);
+    respuesta = await supabase.from('proyectos').insert(proyecto);
   }
+  if (respuesta.error) {
+    return respuesta.error.message;
+  }
+  proyectosStore.recargar();
+  return null;
 }
 
-export function borrarServicio(id) {
-  serviciosStore.set(serviciosStore.get().filter((s) => s.id !== id));
+export async function cambiarVisible(proyecto) {
+  await supabase.from('proyectos').update({ visible: !proyecto.visible }).eq('id', proyecto.id);
+  proyectosStore.recargar();
 }
 
-export function registrarUsuario(usuario) {
-  usuariosStore.set([...usuariosStore.get(), usuario]);
+export async function borrarProyecto(id) {
+  await supabase.from('proyectos').delete().eq('id', id);
+  proyectosStore.recargar();
 }
 
-export function cambiarRol(id, rol) {
-  usuariosStore.set(usuariosStore.get().map((u) => (u.id === id ? { ...u, rol: rol } : u)));
+export async function guardarServicio(servicio, id) {
+  let respuesta;
+  if (id) {
+    respuesta = await supabase.from('servicios').update(servicio).eq('id', id);
+  } else {
+    respuesta = await supabase.from('servicios').insert(servicio);
+  }
+  if (respuesta.error) {
+    return respuesta.error.message;
+  }
+  serviciosStore.recargar();
+  return null;
 }
 
-export function cambiarActivo(id) {
-  usuariosStore.set(usuariosStore.get().map((u) => (u.id === id ? { ...u, activo: !u.activo } : u)));
+export async function borrarServicio(id) {
+  await supabase.from('servicios').delete().eq('id', id);
+  serviciosStore.recargar();
 }
 
-export function borrarUsuario(id) {
-  usuariosStore.set(usuariosStore.get().filter((u) => u.id !== id));
+export async function cambiarRol(id, rol) {
+  await supabase.from('perfiles').update({ rol: rol }).eq('id', id);
+  usuariosStore.recargar();
 }
 
-export function agregarMensaje(mensaje) {
-  mensajesStore.set([mensaje, ...mensajesStore.get()]);
+export async function cambiarActivo(usuario) {
+  await supabase.from('perfiles').update({ activo: !usuario.activo }).eq('id', usuario.id);
+  usuariosStore.recargar();
 }
 
-export function marcarRespondido(id) {
-  mensajesStore.set(mensajesStore.get().map((m) => (m.id === id ? { ...m, estado: 'Respondido' } : m)));
+export async function borrarUsuario(id) {
+  await supabase.from('perfiles').delete().eq('id', id);
+  usuariosStore.recargar();
+}
+
+export async function agregarMensaje(mensaje) {
+  const { error } = await supabase.from('mensajes').insert(mensaje);
+  if (error) {
+    return error.message;
+  }
+  return null;
+}
+
+export async function marcarRespondido(id) {
+  await supabase.from('mensajes').update({ estado: 'Respondido' }).eq('id', id);
+  mensajesStore.recargar();
 }
 
 let visitaContada = false;
@@ -172,24 +179,13 @@ export function sumarVisita() {
     return;
   }
   visitaContada = true;
-  const visitas = { ...visitasStore.get() };
-  const dia = hoy();
-  visitas[dia] = (visitas[dia] || 0) + 1;
-  visitasStore.set(visitas);
+  supabase.from('visitas').insert({ fecha: hoy() }).then(({ error }) => {
+    if (error) {
+      console.log('Error sumando visita: ' + error.message);
+    }
+  });
 }
 
-export function sumarAcceso() {
-  const accesos = { ...accesosStore.get() };
-  const dia = hoy();
-  accesos[dia] = (accesos[dia] || 0) + 1;
-  accesosStore.set(accesos);
-}
-
-export function restaurarTodo() {
-  proyectosStore.borrar();
-  serviciosStore.borrar();
-  usuariosStore.borrar();
-  mensajesStore.borrar();
-  visitasStore.borrar();
-  accesosStore.borrar();
+export async function sumarAcceso(usuarioId) {
+  await supabase.from('accesos').insert({ usuario_id: usuarioId, fecha: hoy() });
 }

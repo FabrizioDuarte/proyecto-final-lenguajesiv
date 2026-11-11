@@ -13,7 +13,7 @@ function nombreDemo(valor) {
 }
 
 function ProyectosAdmin() {
-  const proyectos = useProyectos();
+  const proyectos = useProyectos() || [];
   const [buscar, setBuscar] = useState('');
   const [categoria, setCategoria] = useState('Todas');
 
@@ -84,7 +84,7 @@ function ProyectosAdmin() {
                   <td className="small">{nombreDemo(p.demo)}</td>
                   <td>
                     <div className="form-check form-switch">
-                      <input className="form-check-input" type="checkbox" checked={p.visible} onChange={() => cambiarVisible(p.id)} />
+                      <input className="form-check-input" type="checkbox" checked={p.visible} onChange={() => cambiarVisible(p)} />
                     </div>
                   </td>
                   <td className="text-nowrap">

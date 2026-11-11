@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useMensajes, marcarRespondido } from '../store';
 
 function PanelOperador() {
-  const mensajes = useMensajes();
+  const mensajes = useMensajes() || [];
   const [filtroTipo, setFiltroTipo] = useState('Todos');
   const [filtroEstado, setFiltroEstado] = useState('Todos');
   const [seleccionadoId, setSeleccionadoId] = useState(null);

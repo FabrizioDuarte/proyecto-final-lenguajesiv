@@ -12,7 +12,8 @@ import Registro from './paginas/Registro';
 import PanelOperador from './paginas/PanelOperador';
 import NoEncontrada from './paginas/NoEncontrada';
 import AdminApp from './admin/AdminApp';
-import { sumarVisita } from './store';
+import { sumarVisita, buscarPerfil } from './store';
+import { supabase } from './supabaseClient';
 
 function LandingLayout({ usuario, cerrarSesion }) {
   useEffect(() => {
@@ -31,38 +32,72 @@ function LandingLayout({ usuario, cerrarSesion }) {
 }
 
 function App() {
-  const [usuario, setUsuario] = useState(JSON.parse(localStorage.getItem('usuario')));
+  const [usuario, setUsuario] = useState(null);
+  const [cargando, setCargando] = useState(true);
   const location = useLocation();
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [location.pathname]);
 
-  function iniciarSesion(datos) {
-    localStorage.setItem('usuario', JSON.stringify(datos));
-    setUsuario(datos);
+  useEffect(() => {
+    function cargarPerfil(sesion) {
+      if (!sesion) {
+        setUsuario(null);
+        setCargando(false);
+        return;
+      }
+      buscarPerfil(sesion.user.id).then((perfil) => {
+        if (perfil && perfil.activo) {
+          setUsuario(perfil);
+        } else {
+          setUsuario(null);
+        }
+        setCargando(false);
+      });
+    }
+
+    const { data } = supabase.auth.onAuthStateChange((evento, sesion) => {
+      setTimeout(() => cargarPerfil(sesion), 0);
+    });
+
+    return () => data.subscription.unsubscribe();
+  }, []);
+
+  function iniciarSesion(perfil) {
+    setUsuario(perfil);
   }
 
   function cerrarSesion() {
-    localStorage.removeItem('usuario');
+    supabase.auth.signOut();
     setUsuario(null);
   }
 
+  if (cargando) {
+    return (
+      <div className="min-vh-100 d-flex align-items-center justify-content-center">
+        <div className="spinner-border texto-violeta"></div>
+      </div>
+    );
+  }
+
+  const esOperador = usuario && (usuario.rol === 'operador' || usuario.rol === 'admin');
+
   return (
     <Routes>
-      <Route path="/admin/*" element={<AdminApp />} />
+      <Route
+        path="/admin/*"
+        element={<AdminApp usuario={usuario} iniciarSesion={iniciarSesion} cerrarSesion={cerrarSesion} />}
+      />
       <Route element={<LandingLayout usuario={usuario} cerrarSesion={cerrarSesion} />}>
         <Route path="/" element={<Inicio />} />
         <Route path="/proyectos" element={<Proyectos usuario={usuario} />} />
         <Route path="/proyectos/:id" element={usuario ? <DetalleProyecto /> : <Navigate to="/login" />} />
         <Route path="/servicios" element={<Servicios />} />
         <Route path="/contacto" element={<Contacto usuario={usuario} />} />
-        <Route path="/login" element={usuario ? <Navigate to="/" /> : <Login iniciarSesion={iniciarSesion} />} />
-        <Route path="/registro" element={usuario ? <Navigate to="/" /> : <Registro iniciarSesion={iniciarSesion} />} />
-        <Route
-          path="/operador"
-          element={usuario && usuario.rol === 'operador' ? <PanelOperador /> : <Navigate to="/login" />}
-        />
+        <Route path="/login" element={<Login iniciarSesion={iniciarSesion} />} />
+        <Route path="/registro" element={<Registro iniciarSesion={iniciarSesion} />} />
+        <Route path="/operador" element={esOperador ? <PanelOperador /> : <Navigate to="/login" />} />
         <Route path="*" element={<NoEncontrada />} />
       </Route>
     </Routes>

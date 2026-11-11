@@ -1,23 +1,40 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { usuarioAdmin } from '../datos/datos';
+import { supabase } from '../supabaseClient';
+import { buscarPerfil } from '../store';
 
-function AdminLogin({ entrar }) {
+function AdminLogin({ iniciarSesion }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [cargando, setCargando] = useState(false);
 
-  function ingresar(e) {
+  async function ingresar(e) {
     e.preventDefault();
     if (email === '' || password === '') {
       setError('Completá todos los campos');
       return;
     }
-    if (email !== usuarioAdmin.email || password !== usuarioAdmin.password) {
+
+    setCargando(true);
+    setError('');
+    const { data, error: errorLogin } = await supabase.auth.signInWithPassword({ email: email, password: password });
+
+    if (errorLogin) {
       setError('Datos incorrectos');
+      setCargando(false);
       return;
     }
-    entrar({ nombre: usuarioAdmin.nombre, email: usuarioAdmin.email });
+
+    const perfil = await buscarPerfil(data.user.id);
+    if (!perfil || perfil.rol !== 'admin' || !perfil.activo) {
+      await supabase.auth.signOut();
+      setError('Esta cuenta no es de administrador');
+      setCargando(false);
+      return;
+    }
+
+    iniciarSesion(perfil);
   }
 
   return (
@@ -35,7 +52,9 @@ function AdminLogin({ entrar }) {
             <label className="form-label">Contraseña</label>
             <input type="password" className="form-control" value={password} onChange={(e) => setPassword(e.target.value)} />
           </div>
-          <button type="submit" className="btn btn-violeta w-100">Entrar al panel</button>
+          <button type="submit" className="btn btn-violeta w-100" disabled={cargando}>
+            {cargando ? 'Entrando...' : 'Entrar al panel'}
+          </button>
         </form>
         <p className="text-center mt-3 mb-0">
           <Link to="/" className="texto-violeta">Volver al sitio</Link>

@@ -1,8 +1,8 @@
-# Portfolio Fullstack - Proyecto Final Lenguajes IV
-
-Demo solo de frontend, con datos de prueba (todavía no tiene backend).
-
 ## Cómo correrlo
+
+1. Copiar `.env.example` como `.env.local` y completar la URL y la key del proyecto de Supabase.
+2. Correr los archivos de la carpeta `supabase` en el SQL Editor de Supabase, en orden (`01` a `04`).
+3. Instalar y arrancar:
 
 ```
 npm install
@@ -12,14 +12,11 @@ npm start
 - Sitio: http://localhost:3000
 - Panel de administración: http://localhost:3000/admin
 
-## Usuarios de prueba
+## Usuarios
 
-- **Admin:** `admin@demo.com` / `admin123` (en `/admin/login`)
-- **Operador:** `operador@demo.com` / `operador123` (en `/login`, entra al panel de operador)
-- **Usuarios comunes:** `martina.diaz@gmail.com` / `demo123`, o cualquiera que se cree desde "Registrarse"
+- Los usuarios comunes se registran desde "Registrarse".
+- El admin y el operador se crean desde Supabase (Authentication → Users) y después se les cambia el rol en la tabla `perfiles`. Sus credenciales no van en el repositorio.
 
-## Panel y sitio en dos pestañas
+## Panel y sitio en tiempo real
 
-Todo se guarda en el `localStorage` del navegador. Si abrís el panel en una pestaña y el sitio en otra (mismo navegador, no en incógnito), los cambios del panel aparecen solos en el sitio y las visitas, registros y consultas del sitio aparecen solos en el panel.
-
-El botón "Restaurar datos" del dashboard vuelve todo a los datos de ejemplo.
+Los datos están en Supabase. Lo que se cambia desde el panel aparece en el sitio sin recargar, y las visitas, registros y consultas del sitio aparecen solos en el dashboard.

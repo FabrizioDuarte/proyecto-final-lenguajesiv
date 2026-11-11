@@ -38,10 +38,17 @@ function Navbar({ usuario, cerrarSesion }) {
             <li className="nav-item">
               <NavLink className="nav-link" to="/contacto" onClick={cerrarMenu}>Contacto</NavLink>
             </li>
-            {usuario && usuario.rol === 'operador' && (
+            {usuario && (usuario.rol === 'operador' || usuario.rol === 'admin') && (
               <li className="nav-item">
                 <NavLink className="nav-link" to="/operador" onClick={cerrarMenu}>
-                  <i className="bi bi-inbox"></i> Panel
+                  <i className="bi bi-inbox"></i> Mensajes
+                </NavLink>
+              </li>
+            )}
+            {usuario && usuario.rol === 'admin' && (
+              <li className="nav-item">
+                <NavLink className="nav-link" to="/admin" onClick={cerrarMenu}>
+                  <i className="bi bi-speedometer2"></i> Admin
                 </NavLink>
               </li>
             )}
