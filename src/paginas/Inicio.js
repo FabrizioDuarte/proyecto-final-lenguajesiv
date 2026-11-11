@@ -1,3 +1,4 @@
+import foto from '../imagenes/avatar.jpg';
 import { Link } from 'react-router-dom';
 import { perfil, tecnologias, experiencia } from '../datos/datos';
 import { useServicios } from '../store';
@@ -11,7 +12,7 @@ function Inicio() {
         <div className="container">
           <div className="row align-items-center">
             <div className="col-md-5 order-md-2">
-              <div className="avatar">{perfil.iniciales}</div>
+              <img src={foto} alt={perfil.nombre} className="avatar" />
             </div>
             <div className="col-md-7 order-md-1">
               <p className="texto-cambiante mb-2">¡Hola! Soy</p>
