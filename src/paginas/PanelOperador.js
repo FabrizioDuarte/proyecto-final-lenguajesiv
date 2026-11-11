@@ -19,7 +19,7 @@ function PanelOperador() {
 
   return (
     <div className="container seccion">
-      <h2 className="mb-4"><i className="bi bi-inbox texto-violeta"></i> Panel de operador</h2>
+      <h2 className="mb-4"><i className="bi bi-inbox texto-celeste"></i> Panel de operador</h2>
 
       <div className="row g-4">
         <div className="col-lg-7">
@@ -88,7 +88,7 @@ function PanelOperador() {
                   <p className="small"><i className="bi bi-paperclip"></i> {seleccionado.archivo}</p>
                 )}
                 <div className="d-flex gap-2 flex-wrap">
-                  <a href={'mailto:' + seleccionado.email + '?subject=Re: ' + seleccionado.asunto} className="btn btn-violeta btn-sm">
+                  <a href={'mailto:' + seleccionado.email + '?subject=Re: ' + seleccionado.asunto} className="btn btn-celeste btn-sm">
                     <i className="bi bi-reply"></i> Responder por email
                   </a>
                   {seleccionado.estado === 'Pendiente' && (

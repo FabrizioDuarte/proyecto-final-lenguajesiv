@@ -110,7 +110,7 @@ function Contacto({ usuario }) {
       <div className="encabezado-pagina">
         <div className="container">
           <h1>Contacto</h1>
-          <p className="mb-0" style={{ color: '#c9c9d6' }}>Consultas, presupuestos o asesoramiento técnico</p>
+          <p className="mb-0" style={{ color: '#C9D9EA' }}>Consultas, presupuestos o asesoramiento técnico</p>
         </div>
       </div>
 
@@ -120,11 +120,11 @@ function Contacto({ usuario }) {
             <div className="tarjeta tarjeta-fija p-4">
               <h5>Hablemos</h5>
               <p className="texto-gris">Respondo todas las consultas en menos de 48 horas.</p>
-              <p className="mb-1"><i className="bi bi-envelope texto-violeta"></i> {perfil.email}</p>
+              <p className="mb-1"><i className="bi bi-envelope texto-celeste"></i> {perfil.email}</p>
               <button className="btn btn-sm btn-borde mt-2" onClick={copiarEmail}>
                 <i className={copiado ? 'bi bi-check2' : 'bi bi-clipboard'}></i> {copiado ? 'Copiado' : 'Copiar email'}
               </button>
-              <p className="mt-3 mb-0"><i className="bi bi-geo-alt texto-violeta"></i> {perfil.ciudad}</p>
+              <p className="mt-3 mb-0"><i className="bi bi-geo-alt texto-celeste"></i> {perfil.ciudad}</p>
             </div>
           </div>
 
@@ -200,7 +200,7 @@ function Contacto({ usuario }) {
                     <div className="invalid-feedback">{errores.archivo}</div>
                   </div>
                   <div className="col-12">
-                    <button type="submit" className="btn btn-violeta" disabled={enviando}>
+                    <button type="submit" className="btn btn-celeste" disabled={enviando}>
                       <i className="bi bi-send"></i> {enviando ? 'Enviando...' : 'Enviar mensaje'}
                     </button>
                   </div>

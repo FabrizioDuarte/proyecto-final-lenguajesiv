@@ -1,11 +1,22 @@
 :root {
-  --violeta: #6C63FF;
-  --violeta-oscuro: #5149D6;
-  --verde: #00C9A7;
-  --oscuro: #1E1E2F;
-  --fondo: #F5F6FA;
-  --texto: #2D2D3A;
-  --gris: #6C757D;
+  --celeste: #2F80D0;
+  --celeste-oscuro: #2468AD;
+  --celeste-claro: #BFDBF7;
+  --oscuro: #16263A;
+  --fondo: #E1E5F2;
+  --texto: #1F2A37;
+  --gris: #5A6472;
+}
+
+html {
+  scroll-behavior: auto !important;
+}
+
+*,
+*::before,
+*::after {
+  transition: none !important;
+  animation: none !important;
 }
 
 body {
@@ -28,13 +39,12 @@ h5 {
 }
 
 .navbar-custom .nav-link {
-  color: #c9c9d6;
-  transition: color 0.3s;
+  color: #C9D9EA;
 }
 
 .navbar-custom .nav-link:hover,
 .navbar-custom .nav-link.active {
-  color: var(--violeta);
+  color: var(--celeste-claro);
 }
 
 .logo {
@@ -43,36 +53,43 @@ h5 {
 }
 
 .logo span {
-  color: var(--violeta);
+  color: var(--celeste-claro);
 }
 
-.btn-violeta {
-  background-color: var(--violeta);
+.btn-celeste {
+  background-color: var(--celeste);
   color: white;
   border: none;
   border-radius: 30px;
   padding: 10px 24px;
-  transition: all 0.3s;
 }
 
-.btn-violeta:hover {
-  background-color: var(--violeta-oscuro);
+.btn-celeste:hover {
+  background-color: var(--celeste-oscuro);
   color: white;
-  transform: translateY(-2px);
 }
 
 .btn-borde {
   background-color: transparent;
-  color: var(--violeta);
-  border: 2px solid var(--violeta);
+  color: var(--celeste);
+  border: 2px solid var(--celeste);
   border-radius: 30px;
   padding: 8px 22px;
-  transition: all 0.3s;
 }
 
 .btn-borde:hover {
-  background-color: var(--violeta);
+  background-color: var(--celeste);
   color: white;
+}
+
+.portada .btn-borde {
+  color: var(--celeste-claro);
+  border-color: var(--celeste-claro);
+}
+
+.portada .btn-borde:hover {
+  background-color: var(--celeste-claro);
+  color: var(--oscuro);
 }
 
 .portada {
@@ -86,19 +103,15 @@ h5 {
   font-weight: 700;
 }
 
-.portada-texto {
-  animation: entrar 0.8s ease-out;
-}
-
 .texto-cambiante {
-  color: var(--verde);
+  color: var(--celeste-claro);
 }
 
 .avatar {
   width: 260px;
   height: 260px;
   border-radius: 50%;
-  background-color: var(--violeta);
+  background-color: var(--celeste);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -106,25 +119,7 @@ h5 {
   font-family: 'Poppins', sans-serif;
   font-weight: 700;
   margin: 0 auto;
-  box-shadow: 0 0 60px rgba(108, 99, 255, 0.5);
-  animation: flotar 4s ease-in-out infinite;
-}
-
-@keyframes entrar {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes flotar {
-  0% { transform: translateY(0); }
-  50% { transform: translateY(-15px); }
-  100% { transform: translateY(0); }
+  box-shadow: 0 0 60px rgba(191, 219, 247, 0.35);
 }
 
 .seccion {
@@ -143,7 +138,7 @@ h5 {
   display: block;
   width: 60px;
   height: 4px;
-  background-color: var(--violeta);
+  background-color: var(--celeste);
   margin: 12px auto 0;
   border-radius: 2px;
 }
@@ -153,27 +148,17 @@ h5 {
   border: none;
   border-radius: 16px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
-  transition: transform 0.3s, box-shadow 0.3s;
   height: 100%;
-}
-
-.tarjeta:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 10px 30px rgba(108, 99, 255, 0.18);
-}
-
-.tarjeta-fija:hover {
-  transform: none;
 }
 
 .icono-grande {
   font-size: 2.5rem;
-  color: var(--violeta);
+  color: var(--celeste);
 }
 
 .badge-tec {
-  background-color: rgba(108, 99, 255, 0.12);
-  color: var(--violeta);
+  background-color: var(--celeste-claro);
+  color: var(--celeste-oscuro);
   font-weight: 500;
   font-size: 0.85rem;
   padding: 6px 12px;
@@ -186,19 +171,19 @@ h5 {
   color: var(--gris);
 }
 
-.texto-violeta {
-  color: var(--violeta);
+.texto-celeste {
+  color: var(--celeste);
 }
 
 .dato-numero {
   font-size: 2.2rem;
   font-weight: 700;
-  color: var(--violeta);
+  color: var(--celeste);
   font-family: 'Poppins', sans-serif;
 }
 
 .linea-tiempo {
-  border-left: 3px solid var(--violeta);
+  border-left: 3px solid var(--celeste);
   padding-left: 25px;
 }
 
@@ -215,18 +200,8 @@ h5 {
   width: 15px;
   height: 15px;
   border-radius: 50%;
-  background-color: var(--verde);
-}
-
-.aparecer {
-  opacity: 0;
-  transform: translateY(40px);
-  transition: opacity 0.7s, transform 0.7s;
-}
-
-.aparecer.visible {
-  opacity: 1;
-  transform: translateY(0);
+  background-color: white;
+  border: 3px solid var(--celeste);
 }
 
 .banda-oscura {
@@ -251,9 +226,9 @@ h5 {
 }
 
 .filtro-btn.activo {
-  background-color: var(--violeta);
+  background-color: var(--celeste);
   color: white;
-  border-color: var(--violeta);
+  border-color: var(--celeste);
 }
 
 .caja-form {
@@ -264,18 +239,18 @@ h5 {
 
 .caja-demo {
   background-color: var(--fondo);
-  border: 2px dashed var(--violeta);
+  border: 2px dashed var(--celeste);
   border-radius: 16px;
   padding: 25px;
 }
 
 .estado-pendiente {
   background-color: #FFC107;
-  color: #2D2D3A;
+  color: #1F2A37;
 }
 
 .estado-respondido {
-  background-color: var(--verde);
+  background-color: var(--celeste);
   color: white;
 }
 
@@ -285,19 +260,18 @@ h5 {
 
 .footer {
   background-color: var(--oscuro);
-  color: #c9c9d6;
+  color: #C9D9EA;
 }
 
 .footer a {
-  color: #c9c9d6;
+  color: #C9D9EA;
   text-decoration: none;
   margin: 0 8px;
   font-size: 1.3rem;
-  transition: color 0.3s;
 }
 
 .footer a:hover {
-  color: var(--violeta);
+  color: var(--celeste-claro);
 }
 
 .img-proyecto {
@@ -319,7 +293,7 @@ h5 {
 }
 
 .logo-oscuro span {
-  color: var(--violeta);
+  color: var(--celeste);
 }
 
 .admin-fondo-login {
@@ -348,10 +322,9 @@ h5 {
 }
 
 .admin-menu .nav-link {
-  color: #c9c9d6;
+  color: #C9D9EA;
   border-radius: 10px;
   margin-bottom: 4px;
-  transition: background-color 0.3s;
 }
 
 .admin-menu .nav-link:hover {
@@ -360,7 +333,7 @@ h5 {
 }
 
 .admin-menu .nav-link.active {
-  background-color: var(--violeta);
+  background-color: var(--celeste);
   color: white;
 }
 
@@ -375,8 +348,8 @@ h5 {
   position: relative;
 }
 
-.borde-violeta {
-  border: 2px solid var(--violeta);
+.borde-celeste {
+  border: 2px solid var(--celeste);
 }
 
 .punto-vivo {
@@ -384,15 +357,8 @@ h5 {
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  background-color: var(--verde);
+  background-color: #28A745;
   margin-right: 5px;
-  animation: latir 1.5s infinite;
-}
-
-@keyframes latir {
-  0% { opacity: 1; }
-  50% { opacity: 0.3; }
-  100% { opacity: 1; }
 }
 
 @media (max-width: 992px) {

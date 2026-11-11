@@ -64,7 +64,7 @@ function Navbar({ usuario, cerrarSesion }) {
             ) : (
               <>
                 <Link className="btn btn-borde btn-sm" to="/login" onClick={cerrarMenu}>Ingresar</Link>
-                <Link className="btn btn-violeta btn-sm" to="/registro" onClick={cerrarMenu}>Registrarse</Link>
+                <Link className="btn btn-celeste btn-sm" to="/registro" onClick={cerrarMenu}>Registrarse</Link>
               </>
             )}
           </div>

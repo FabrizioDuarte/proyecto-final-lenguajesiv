@@ -76,7 +76,7 @@ function App() {
   if (cargando) {
     return (
       <div className="min-vh-100 d-flex align-items-center justify-content-center">
-        <div className="spinner-border texto-violeta"></div>
+        <p className="texto-gris">Cargando...</p>
       </div>
     );
   }

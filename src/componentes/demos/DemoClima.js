@@ -42,7 +42,7 @@ function DemoClima() {
   return (
     <div className="text-center">
       <div className="d-flex gap-2 justify-content-center flex-wrap">
-        <button className="btn btn-violeta" onClick={usarUbicacion}>
+        <button className="btn btn-celeste" onClick={usarUbicacion}>
           <i className="bi bi-geo-alt"></i> Usar mi ubicación
         </button>
         <button className="btn btn-borde" onClick={() => buscarClima(-24.79, -65.41, 'Salta')}>
@@ -50,7 +50,7 @@ function DemoClima() {
         </button>
       </div>
 
-      {cargando && <div className="spinner-border mt-4 texto-violeta"></div>}
+      {cargando && <p className="texto-gris mt-4 mb-0">Cargando...</p>}
       {error && <div className="alert alert-warning mt-3 mb-0">{error}</div>}
 
       {clima && !cargando && (

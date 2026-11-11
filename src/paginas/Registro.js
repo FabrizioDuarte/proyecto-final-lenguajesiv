@@ -121,12 +121,12 @@ function Registro({ iniciarSesion }) {
           />
           <div className="invalid-feedback">{errores.repetir}</div>
         </div>
-        <button type="submit" className="btn btn-violeta w-100" disabled={cargando}>
+        <button type="submit" className="btn btn-celeste w-100" disabled={cargando}>
           {cargando ? 'Creando cuenta...' : 'Registrarme'}
         </button>
       </form>
       <p className="text-center mt-3 mb-0">
-        ¿Ya tenés cuenta? <Link to="/login" className="texto-violeta">Iniciá sesión</Link>
+        ¿Ya tenés cuenta? <Link to="/login" className="texto-celeste">Iniciá sesión</Link>
       </p>
     </div>
   );

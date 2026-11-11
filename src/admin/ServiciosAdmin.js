@@ -101,7 +101,7 @@ function ServiciosAdmin() {
               <div className="mb-3">
                 <label className="form-label">Ícono</label>
                 <div className="d-flex align-items-center gap-2">
-                  <i className={'bi ' + form.icono + ' fs-3 texto-violeta'}></i>
+                  <i className={'bi ' + form.icono + ' fs-3 texto-celeste'}></i>
                   <select name="icono" className="form-select" value={form.icono} onChange={cambiar}>
                     {iconos.map((icono) => (
                       <option key={icono} value={icono}>{icono.replace('bi-', '')}</option>
@@ -131,7 +131,7 @@ function ServiciosAdmin() {
                 <div className="invalid-feedback">{errores.incluye}</div>
               </div>
               <div className="d-flex gap-2">
-                <button type="submit" className="btn btn-violeta" disabled={guardando}>
+                <button type="submit" className="btn btn-celeste" disabled={guardando}>
                   <i className="bi bi-save"></i> {editando ? 'Guardar cambios' : 'Agregar'}
                 </button>
                 {editando && (
@@ -144,9 +144,9 @@ function ServiciosAdmin() {
 
         <div className="col-lg-7">
           {servicios.map((s) => (
-            <div className={editando === s.id ? 'tarjeta tarjeta-fija h-auto p-3 mb-3 borde-violeta' : 'tarjeta tarjeta-fija h-auto p-3 mb-3'} key={s.id}>
+            <div className={editando === s.id ? 'tarjeta tarjeta-fija h-auto p-3 mb-3 borde-celeste' : 'tarjeta tarjeta-fija h-auto p-3 mb-3'} key={s.id}>
               <div className="d-flex gap-3 align-items-start">
-                <i className={'bi ' + s.icono + ' fs-2 texto-violeta'}></i>
+                <i className={'bi ' + s.icono + ' fs-2 texto-celeste'}></i>
                 <div className="flex-grow-1">
                   <h6 className="mb-1">{s.titulo}</h6>
                   <p className="small texto-gris mb-1">{s.descripcion}</p>

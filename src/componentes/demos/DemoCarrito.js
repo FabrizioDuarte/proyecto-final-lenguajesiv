@@ -38,7 +38,7 @@ function DemoCarrito() {
               <div>{p.nombre}</div>
               <small className="texto-gris">${p.precio.toLocaleString('es-AR')}</small>
             </div>
-            <button className="btn btn-sm btn-violeta" onClick={() => agregar(p)}>
+            <button className="btn btn-sm btn-celeste" onClick={() => agregar(p)}>
               <i className="bi bi-plus"></i>
             </button>
           </div>

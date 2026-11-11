@@ -32,7 +32,7 @@ function ProyectosAdmin() {
     <div>
       <div className="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
         <h2 className="mb-0">Proyectos y demos</h2>
-        <Link to="/admin/proyectos/nuevo" className="btn btn-violeta">
+        <Link to="/admin/proyectos/nuevo" className="btn btn-celeste">
           <i className="bi bi-plus-lg"></i> Nuevo proyecto
         </Link>
       </div>
@@ -73,7 +73,7 @@ function ProyectosAdmin() {
                     {p.imagen ? (
                       <img src={p.imagen} alt="" className="miniatura" />
                     ) : (
-                      <i className={'bi ' + p.icono + ' fs-3 texto-violeta'}></i>
+                      <i className={'bi ' + p.icono + ' fs-3 texto-celeste'}></i>
                     )}
                   </td>
                   <td>

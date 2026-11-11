@@ -43,7 +43,7 @@ function DemoTareas() {
           value={texto}
           onChange={(e) => setTexto(e.target.value)}
         />
-        <button className="btn btn-violeta">Agregar</button>
+        <button className="btn btn-celeste">Agregar</button>
       </form>
       {error && <small className="text-danger">{error}</small>}
 

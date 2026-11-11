@@ -1,20 +1,9 @@
-import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { perfil, tecnologias, experiencia } from '../datos/datos';
 import { useServicios } from '../store';
 
-const palabras = ['Fullstack', 'React', 'Node.js', 'Web'];
-
 function Inicio() {
-  const [indice, setIndice] = useState(0);
   const servicios = useServicios() || [];
-
-  useEffect(() => {
-    const intervalo = setInterval(() => {
-      setIndice((anterior) => (anterior + 1) % palabras.length);
-    }, 2000);
-    return () => clearInterval(intervalo);
-  }, []);
 
   return (
     <div>
@@ -24,16 +13,16 @@ function Inicio() {
             <div className="col-md-5 order-md-2">
               <div className="avatar">{perfil.iniciales}</div>
             </div>
-            <div className="col-md-7 order-md-1 portada-texto">
+            <div className="col-md-7 order-md-1">
               <p className="texto-cambiante mb-2">¡Hola! Soy</p>
               <h1>{perfil.nombre}</h1>
               <p className="mb-2"><i className="bi bi-mortarboard"></i> {perfil.titulo}</p>
               <h2 className="h3 mb-4">
-                Desarrollador <span className="texto-cambiante">{palabras[indice]}</span>
+                Desarrollador <span className="texto-cambiante">Fullstack</span>
               </h2>
-              <p className="lead mb-4" style={{ color: '#c9c9d6' }}>{perfil.descripcion}</p>
+              <p className="lead mb-4" style={{ color: '#C9D9EA' }}>{perfil.descripcion}</p>
               <div className="d-flex flex-column flex-sm-row gap-3 justify-content-center justify-content-md-start">
-                <Link to="/proyectos" className="btn btn-violeta">Ver proyectos</Link>
+                <Link to="/proyectos" className="btn btn-celeste">Ver proyectos</Link>
                 <Link to="/contacto" className="btn btn-borde">Contactame</Link>
               </div>
             </div>
@@ -47,7 +36,7 @@ function Inicio() {
             <div className="row align-items-center g-4">
               <div className="col-lg-7">
                 <p className="texto-gris fs-5">{perfil.sobreMi}</p>
-                <p><i className="bi bi-geo-alt texto-violeta"></i> {perfil.ciudad}</p>
+                <p><i className="bi bi-geo-alt texto-celeste"></i> {perfil.ciudad}</p>
               </div>
               <div className="col-lg-5">
                 <div className="row text-center g-3">
@@ -106,7 +95,7 @@ function Inicio() {
                     <div className="item-tiempo" key={exp.puesto}>
                       <small className="texto-gris">{exp.fecha}</small>
                       <h5 className="mb-1">{exp.puesto}</h5>
-                      <p className="fw-medium mb-1 texto-violeta">{exp.empresa}</p>
+                      <p className="fw-medium mb-1 texto-celeste">{exp.empresa}</p>
                       <p className="texto-gris mb-0">{exp.descripcion}</p>
                     </div>
                 ))}
@@ -139,8 +128,8 @@ function Inicio() {
       <section className="seccion banda-oscura text-center">
         <div className="container">
             <h2 className="mb-3">¿Tenés un proyecto en mente?</h2>
-            <p className="mb-4" style={{ color: '#c9c9d6' }}>Contame tu idea y te paso un presupuesto sin compromiso.</p>
-            <Link to="/contacto?tipo=presupuesto" className="btn btn-violeta btn-lg">Pedir presupuesto</Link>
+            <p className="mb-4" style={{ color: '#C9D9EA' }}>Contame tu idea y te paso un presupuesto sin compromiso.</p>
+            <Link to="/contacto?tipo=presupuesto" className="btn btn-celeste btn-lg">Pedir presupuesto</Link>
         </div>
       </section>
     </div>

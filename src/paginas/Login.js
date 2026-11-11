@@ -61,12 +61,12 @@ function Login({ iniciarSesion }) {
           <label className="form-label">Contraseña</label>
           <input type="password" className="form-control" value={password} onChange={(e) => setPassword(e.target.value)} />
         </div>
-        <button type="submit" className="btn btn-violeta w-100" disabled={cargando}>
+        <button type="submit" className="btn btn-celeste w-100" disabled={cargando}>
           {cargando ? 'Ingresando...' : 'Ingresar'}
         </button>
       </form>
       <p className="text-center mt-3 mb-0">
-        ¿No tenés cuenta? <Link to="/registro" className="texto-violeta">Registrate</Link>
+        ¿No tenés cuenta? <Link to="/registro" className="texto-celeste">Registrate</Link>
       </p>
     </div>
   );

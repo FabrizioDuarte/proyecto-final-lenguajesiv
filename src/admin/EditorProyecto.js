@@ -32,7 +32,7 @@ function EditorProyecto() {
     return (
       <div>
         <h2>El proyecto no existe</h2>
-        <Link to="/admin/proyectos" className="texto-violeta">Volver a proyectos</Link>
+        <Link to="/admin/proyectos" className="texto-celeste">Volver a proyectos</Link>
       </div>
     );
   }
@@ -156,7 +156,7 @@ function FormProyecto({ original }) {
 
   return (
     <div>
-      <Link to="/admin/proyectos" className="text-decoration-none texto-violeta">
+      <Link to="/admin/proyectos" className="text-decoration-none texto-celeste">
         <i className="bi bi-arrow-left"></i> Volver a proyectos
       </Link>
       <h2 className="mt-2 mb-4">{esNuevo ? 'Nuevo proyecto' : 'Editar ' + original.titulo}</h2>
@@ -247,7 +247,7 @@ function FormProyecto({ original }) {
 
             <label className="form-label">Ícono</label>
             <div className="d-flex align-items-center gap-2 mb-3">
-              <i className={'bi ' + form.icono + ' fs-3 texto-violeta'}></i>
+              <i className={'bi ' + form.icono + ' fs-3 texto-celeste'}></i>
               <select name="icono" className="form-select" value={form.icono} onChange={cambiar}>
                 {iconos.map((icono) => (
                   <option key={icono} value={icono}>{icono.replace('bi-', '')}</option>
@@ -267,7 +267,7 @@ function FormProyecto({ original }) {
               <label className="form-check-label" htmlFor="visible">Visible en el sitio</label>
             </div>
 
-            <button type="submit" className="btn btn-violeta w-100" disabled={guardando}>
+            <button type="submit" className="btn btn-celeste w-100" disabled={guardando}>
               <i className="bi bi-save"></i> {guardando ? 'Guardando...' : 'Guardar'}
             </button>
           </div>

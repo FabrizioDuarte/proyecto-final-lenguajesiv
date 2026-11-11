@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import Aparecer from '../componentes/Aparecer';
 import { useProyectos } from '../store';
 
 const categorias = ['Todos', 'Frontend', 'Fullstack', 'Mobile'];
@@ -21,7 +20,7 @@ function Proyectos({ usuario }) {
       <div className="encabezado-pagina">
         <div className="container">
           <h1>Proyectos</h1>
-          <p className="mb-0" style={{ color: '#c9c9d6' }}>Algunos de los trabajos que hice</p>
+          <p className="mb-0" style={{ color: '#C9D9EA' }}>Algunos de los trabajos que hice</p>
         </div>
       </div>
 
@@ -48,7 +47,6 @@ function Proyectos({ usuario }) {
         <div className="row g-4">
           {lista.map((proyecto) => (
             <div className="col-md-6 col-lg-4" key={proyecto.id}>
-              <Aparecer className="h-100">
                 <div className="tarjeta p-4 d-flex flex-column">
                   {proyecto.imagen && <img src={proyecto.imagen} alt={proyecto.titulo} className="img-proyecto mb-3" />}
                   <div className="d-flex justify-content-between align-items-start">
@@ -63,13 +61,12 @@ function Proyectos({ usuario }) {
                     ))}
                   </div>
                   <div className="mt-auto">
-                    <Link to={'/proyectos/' + proyecto.id} className="btn btn-violeta w-100">
+                    <Link to={'/proyectos/' + proyecto.id} className="btn btn-celeste w-100">
                       {!usuario && <i className="bi bi-lock me-1"></i>}
                       Ver detalle
                     </Link>
                   </div>
                 </div>
-              </Aparecer>
             </div>
           ))}
         </div>

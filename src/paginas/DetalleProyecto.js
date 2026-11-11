@@ -37,7 +37,7 @@ function DetalleProyecto() {
       </div>
 
       <div className="container seccion">
-        <Link to="/proyectos" className="text-decoration-none texto-violeta">
+        <Link to="/proyectos" className="text-decoration-none texto-celeste">
           <i className="bi bi-arrow-left"></i> Volver a proyectos
         </Link>
 
@@ -63,7 +63,7 @@ function DetalleProyecto() {
                 <a href="https://github.com" target="_blank" rel="noreferrer" className="btn btn-borde">
                   <i className="bi bi-github"></i> Código
                 </a>
-                <button className="btn btn-violeta" onClick={copiarLink}>
+                <button className="btn btn-celeste" onClick={copiarLink}>
                   <i className="bi bi-link-45deg"></i> Copiar link
                 </button>
               </div>

@@ -113,16 +113,16 @@ function Dashboard() {
       {
         label: 'Visitas',
         data: visitasPorDia,
-        borderColor: '#6C63FF',
-        backgroundColor: 'rgba(108, 99, 255, 0.15)',
+        borderColor: '#2F80D0',
+        backgroundColor: 'rgba(47, 128, 208, 0.15)',
         fill: true,
         tension: 0.3
       },
       {
         label: 'Accesos de usuarios',
         data: accesosPorDia,
-        borderColor: '#00C9A7',
-        backgroundColor: '#00C9A7',
+        borderColor: '#16263A',
+        backgroundColor: '#16263A',
         tension: 0.3
       }
     ]
@@ -133,7 +133,7 @@ function Dashboard() {
     datasets: [
       {
         data: cantidadesPorTipo,
-        backgroundColor: ['#6C63FF', '#00C9A7', '#FFC107']
+        backgroundColor: ['#2F80D0', '#8EC3F0', '#16263A']
       }
     ]
   };
@@ -144,7 +144,7 @@ function Dashboard() {
       {
         label: 'Usuarios registrados',
         data: registrosPorDia,
-        backgroundColor: '#6C63FF',
+        backgroundColor: '#2F80D0',
         borderRadius: 6
       }
     ]
@@ -153,6 +153,7 @@ function Dashboard() {
   const opciones = {
     responsive: true,
     maintainAspectRatio: false,
+    animation: false,
     scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }
   };
 
@@ -192,7 +193,7 @@ function Dashboard() {
 
       {cargando ? (
         <div className="text-center my-5">
-          <div className="spinner-border texto-violeta"></div>
+          <p className="texto-gris">Cargando...</p>
         </div>
       ) : (
         <>
@@ -245,7 +246,7 @@ function Dashboard() {
                   <p className="texto-gris text-center my-5">No hay consultas en este período</p>
                 ) : (
                   <div className="grafico">
-                    <Doughnut data={datosTorta} options={{ responsive: true, maintainAspectRatio: false }} />
+                    <Doughnut data={datosTorta} options={{ responsive: true, maintainAspectRatio: false, animation: false }} />
                   </div>
                 )}
               </div>
