@@ -20,3 +20,8 @@ npm start
 ## Panel y sitio en tiempo real
 
 Los datos están en Supabase. Lo que se cambia desde el panel aparece en el sitio sin recargar, y las visitas, registros y consultas del sitio aparecen solos en el dashboard.
+
+## Documentación
+
+- [Arquitectura](documentacion/arquitectura.md): infraestructura, base de datos, roles, rutas y cómo funciona cada parte.
+- [Manual de estilo](documentacion/manual-de-estilo.md): colores, tipografías, componentes y pantallas.
